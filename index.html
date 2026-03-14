@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Үйлену тойына шақыру | Ербол мен Назерке</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400&family=Marck+Script&display=swap" rel="stylesheet">
+    
+    <style>
+        /* БАЗОВЫЕ НАСТРОЙКИ */
+        body { margin: 0; padding: 0; background-color: #f0f0f0; font-family: 'Montserrat', sans-serif; color: #333; }
+        .mobile-container { max-width: 450px; margin: 0 auto; background-color: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.1); overflow: hidden; }
+        
+        /* ОБЛОЖКА */
+        .hero {
+            position: relative; height: 100vh;
+            /* ССЫЛКА НА ГЛАВНОЕ ФОТО/РЕНДЕР (сюда можно поставить ваш 3D-рендер) */
+            background-image: url('https://i.pinimg.com/736x/a0/78/7b/a0787b2151b55f4e55cd74939eb636e7.jpg');
+            background-size: cover; background-position: center;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; text-align: center;
+        }
+        .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); }
+        .hero-content { position: relative; z-index: 1; }
+        .names { font-family: 'Marck Script', cursive; font-size: 3.8rem; margin: 0 0 10px 0; font-weight: normal; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); line-height: 1.1;}
+        .hero-date { font-family: 'Playfair Display', serif; font-size: 1.2rem; letter-spacing: 2px; }
+
+        /* ОСНОВНОЙ КОНТЕНТ */
+        .section { padding: 50px 20px; text-align: center; overflow: hidden; }
+        .title { font-family: 'Playfair Display', serif; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+        .text { font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px; color: #444; }
+        .divider { font-size: 1.5rem; color: #ccc; margin: 30px 0; }
+        
+        /* КАЛЕНДАРЬ */
+        .calendar-wrap { margin: 30px auto; max-width: 320px; }
+        .month-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 1px; color: #333;}
+        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); font-weight: 500; font-size: 0.8rem; margin-bottom: 15px; color: #777; }
+        .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px 5px; font-family: 'Montserrat', sans-serif; font-size: 1rem; color: #333;}
+        .day { padding: 5px 0; display: flex; justify-content: center; align-items: center; position: relative; height: 35px; }
+        .day.empty { visibility: hidden; }
+        
+        /* НОВОЕ ВЫДЕЛЕНИЕ ДАТЫ (СЕРДЕЧКО ВМЕСТО КРУГА) */
+        .day.highlight { position: relative; font-weight: bold; color: #222; }
+        .day.highlight::before {
+            content: ''; 
+            position: absolute; 
+            width: 45px; 
+            height: 45px; 
+            /* Красивое контурное сердечко в формате SVG */
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="%23333" stroke-width="0.8"/></svg>') no-repeat center center;
+            background-size: contain;
+            top: 50%; left: 50%; 
+            transform: translate(-50%, -46%); /* Центруем сердечко относительно цифры */
+            z-index: -1;
+        }
+
+        /* ДЕТАЛИ (ВРЕМЯ И МЕСТО) */
+        .details-block { margin: 30px 0; }
+        .details-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; color: #555; }
+        .details-value { font-size: 1.5rem; font-family: 'Playfair Display', serif; }
+
+        /* БЛОК С ТАЙМЕРОМ */
+        .timer-section {
+            position: relative; padding: 70px 20px;
+            /* ССЫЛКА НА ВТОРОЕ ФОТО/РЕНДЕР ДЛЯ ФОНА ТАЙМЕРА */
+            background-image: url('https://images.unsplash.com/photo-1469371670807-013ccf25f16a?q=80&w=1000&auto=format&fit=crop'); 
+            background-size: cover; background-position: center; color: #fff; text-align: center;
+        }
+        .timer-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); }
+        .timer-content { position: relative; z-index: 1; }
+        .timer-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 30px; font-style: italic; font-weight: 400;}
+        .timer { display: flex; justify-content: center; gap: 20px; }
+        .timer-item { display: flex; flex-direction: column; align-items: center; }
+        .timer-val { font-family: 'Playfair Display', serif; font-size: 2.5rem; line-height: 1; margin-bottom: 5px; font-weight: 400;}
+        .timer-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; font-family: 'Montserrat', sans-serif;}
+
+        /* АНКЕТА И ПОДВАЛ */
+        .form-section { padding: 50px 20px; text-align: center; background-color: #f9f9f9; overflow: hidden;}
+        .form-group { margin-bottom: 20px; text-align: left; }
+        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        .radio-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .radio-group label { font-size: 0.9rem; display: flex; align-items: center; gap: 10px; cursor: pointer; color: #444;}
+        
+        button { background-color: #333; color: #fff; border: none; padding: 15px 30px; width: 100%; font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 1px; border-radius: 5px; cursor: pointer; margin-top: 20px; transition: background 0.3s; }
+        button:hover { background-color: #555; }
+        button:disabled { background-color: #999; cursor: not-allowed; }
+        #successMessage { display: none; color: #2e7d32; font-weight: bold; margin-top: 20px; font-size: 1.1rem; }
+        
+        /* ИЗМЕНЕННЫЙ СТИЛЬ ПОДПИСИ В КОНЦЕ */
+        .signature-title { font-family: 'Playfair Display', serif; font-size: 1.7rem; text-transform: uppercase; letter-spacing: 2px; color: #777; margin-bottom: 5px; }
+        .signature-names { font-family: 'Montserrat', sans-serif; font-size: 2rem; color: #333; font-weight: 500; }
+
+        /* ========================================= */
+        /* КЛАССЫ ДЛЯ АНИМАЦИИ ПРИ СКРОЛЛЕ            */
+        /* ========================================= */
+        .fade-in {
+            opacity: 0; 
+            transform: translateY(40px); 
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out; 
+        }
+        
+        .fade-in.visible {
+            opacity: 1; 
+            transform: translateY(0); 
+        }
+        
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.3s; }
+        .delay-3 { transition-delay: 0.5s; }
+    </style>
+</head>
+<body>
+
+<div class="mobile-container">
+    
+    <header class="hero">
+        <div class="hero-content fade-in visible">
+            <h1 class="names">Ербол & Назерке</h1>
+            <div class="hero-date">12 / 07 / 2026</div>
+        </div>
+    </header>
+
+    <section class="section">
+        <h2 class="title fade-in">Құрметті қонақтар!</h2>
+        <p class="text fade-in delay-1">Өміріміздегі ең басты әрі салтанатты мереке – үйлену тойымыздың өтетінін қуанышпен хабарлаймыз!</p>
+        <p class="text fade-in delay-2">Осы бір ерекше күнді өзімізге ең жақын әрі қымбат адамдардың ортасында өткізіп, қуанышымызды сіздермен бөліскіміз келеді!</p>
+        
+        <div class="divider fade-in">~ ♡ ~</div>
+
+        <div class="calendar-wrap fade-in">
+            <div class="month-title">Шілде 2026</div>
+            <div class="weekdays">
+                <div>ДС</div><div>СС</div><div>СР</div><div>БС</div><div>ЖМ</div><div>СН</div><div>ЖС</div>
+            </div>
+            <div class="days">
+                <div class="day empty"></div><div class="day empty"></div>
+                <div class="day">1</div><div class="day">2</div><div class="day">3</div><div class="day">4</div><div class="day">5</div>
+                <div class="day">6</div><div class="day">7</div><div class="day">8</div><div class="day">9</div><div class="day">10</div><div class="day">11</div>
+                
+                <div class="day highlight">12</div>
+                
+                <div class="day">13</div><div class="day">14</div><div class="day">15</div><div class="day">16</div><div class="day">17</div><div class="day">18</div><div class="day">19</div>
+                <div class="day">20</div><div class="day">21</div><div class="day">22</div><div class="day">23</div><div class="day">24</div><div class="day">25</div><div class="day">26</div>
+                <div class="day">27</div><div class="day">28</div><div class="day">29</div><div class="day">30</div><div class="day">31</div>
+            </div>
+        </div>
+
+        <div class="divider fade-in">~ ♡ ~</div>
+
+        <div class="details-block fade-in">
+            <div class="details-title">Басталуы</div>
+            <div class="details-value">15:00</div>
+        </div>
+        
+        <div class="details-block fade-in delay-1">
+            <div class="details-title">Location</div>
+            <div class="details-value">Grand Hall<br><span style="font-size: 1rem; color: #777;">Теміртау қаласы</span></div>
+        </div>
+    </section>
+
+    <section class="timer-section">
+        <div class="timer-content fade-in">
+            <div class="timer-title">Тойға дейін қалды...</div>
+            <div class="timer" id="countdown">
+                <div class="timer-item"><span class="timer-val" id="days">00</span><span class="timer-label">Күн</span></div>
+                <div class="timer-item"><span class="timer-val" id="hours">00</span><span class="timer-label">Сағат</span></div>
+                <div class="timer-item"><span class="timer-val" id="minutes">00</span><span class="timer-label">Минут</span></div>
+                <div class="timer-item"><span class="timer-val" id="seconds">00</span><span class="timer-label">Секунд</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <h2 class="title fade-in">Сауалнама</h2>
+        <p class="text fade-in delay-1">Қатысуыңызды растауыңызды сұраймыз!<br></p>
+
+        <form id="rsvpForm" class="fade-in delay-2">
+            <div class="form-group">
+                <input type="text" id="guestName" name="guestName" placeholder="Аты-жөніңіз" required>
+            </div>
+
+            <div class="form-group">
+                <p class="text" style="margin-bottom: 5px; text-align: left; font-weight: bold;">Қатысуыңыз:</p>
+                <div class="radio-group">
+                    <label><input type="radio" name="attendance" value="С удовольствием буду!" required>Қуана-қуана келемін!</label>
+                    <label><input type="radio" name="attendance" value="Приду с парой"> Жұбыммен келемін</label>
+                    <label><input type="radio" name="attendance" value="К сожалению, не смогу"> Өкінішке орай, келе алмаймын</label>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn">Жіберу</button>
+            <div id="successMessage">Рақмет! Сіздің жауабыңыз сәтті жіберілді. Сізді асыға күтеміз!</div>
+        </form>
+
+        <div class="fade-in delay-3" style="margin-top: 50px;">
+            <div class="signature-title">Той иелері</div>
+            <div class="signature-names">Саурбек пен Зульфия</div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    // --- 1. АНИМАЦИЯ ПРИ СКРОЛЛЕ ---
+    document.addEventListener("DOMContentLoaded", function() {
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15 
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const fadeElements = document.querySelectorAll('.fade-in');
+        fadeElements.forEach(el => observer.observe(el));
+    });
+
+    // --- 2. НАСТРОЙКИ ТАЙМЕРА (12 Июля 2026 15:00) ---
+    const countDownDate = new Date("Jul 12, 2026 15:00:00").getTime();
+    const timerInterval = setInterval(function() {
+        const now = new Date().getTime();
+        const distance = countDownDate - now;
+
+        if (distance < 0) {
+            clearInterval(timerInterval);
+            document.getElementById("countdown").innerHTML = "<div class='timer-val' style='font-size: 1.8rem;'>Свадьба уже началась!</div>";
+            return;
+        }
+
+        document.getElementById("days").innerHTML = String(Math.floor(distance / (1000 * 60 * 60 * 24))).padStart(2, '0');
+        document.getElementById("hours").innerHTML = String(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+        document.getElementById("minutes").innerHTML = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+        document.getElementById("seconds").innerHTML = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, '0');
+    }, 1000);
+
+    // --- 3. НАСТРОЙКИ TELEGRAM ---
+    const TELEGRAM_BOT_TOKEN = '8667383819:AAFWyIw8zaenlp1aQL-RdsAEDYl3yp4Boxg'; 
+    const TELEGRAM_CHAT_ID = '1026551803'; 
+
+    document.getElementById('rsvpForm').addEventListener('submit', function(e) {
+        e.preventDefault(); 
+        
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerText = 'Жіберілуде...';
+
+        const guestName = document.getElementById('guestName').value;
+        const attendance = document.querySelector('input[name="attendance"]:checked').value;
+
+        const message = `🔔 Қонақтан жаңа сауалнама!\n\n👤 Аты-жөні: ${guestName}\n✅ Статус: ${attendance}`;
+
+        fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.ok) {
+                document.getElementById('rsvpForm').reset();
+                btn.style.display = 'none'; 
+                document.getElementById('successMessage').style.display = 'block'; 
+            } else {
+                alert('Ошибка отправки. Пожалуйста, попробуйте позже.');
+                btn.disabled = false;
+                btn.innerText = 'Отправить';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Произошла ошибка при отправке данных.');
+            btn.disabled = false;
+            btn.innerText = 'Отправить';
+        });
+    });
+</script>
+
+</body>
+</html>
